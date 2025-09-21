@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { GoogleGenAI } from "@google/genai";
 import OpenAI from "openai";
 
 export async function POST(request: NextRequest) {
@@ -15,10 +14,8 @@ export async function POST(request: NextRequest) {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-        // Initialize Gemini Image Generation Client
-        const geminiImageClient = new GoogleGenAI({
-            apiKey: process.env.GEMINI_API_KEY || ""
-        });
+        // Note: Direct image generation with Gemini requires different approach
+        // For now, we'll use enhanced prompts
 
         // Generate image prompts and visual strategy
         const prompt = `Create a comprehensive visual strategy for a startup with the idea: "${idea}". 
@@ -162,11 +159,8 @@ export async function POST(request: NextRequest) {
                     const enhancedPromptText = enhancedPrompt.response.text();
                     console.log(`Enhanced prompt for ${prompt.type}: ${enhancedPromptText}`);
 
-                    // Now try to generate actual image with Gemini
-                    try {
-                        console.log(`Generating actual image with Gemini for: ${prompt.type}`);
-                        const imageModel = geminiImageClient.getGenerativeModel({ model: "gemini-2.5-flash-image-preview" });
-                        const imageResponse = await imageModel.generateContent(enhancedPromptText);
+                    // Return enhanced prompt (image generation not available)
+                    console.log(`Returning enhanced prompt for: ${prompt.type}`);
 
                         // Extract image data from response
                         const imageParts = imageResponse.response.candidates?.[0]?.content?.parts?.filter(

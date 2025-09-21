@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
         // In a real app, you would fetch user's companions from a database
         // For now, return empty array or default companions
-        const userCompanions = [];
+        const userCompanions: any[] = [];
 
         return NextResponse.json(userCompanions);
 

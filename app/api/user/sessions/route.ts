@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
         // In a real app, you would fetch user's session history from a database
         // For now, return empty array or default sessions
-        const userSessions = [];
+        const userSessions: any[] = [];
 
         return NextResponse.json(userSessions);
 
