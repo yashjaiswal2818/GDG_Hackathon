@@ -13,7 +13,7 @@ const staticCompanions = [
         author: "system"
     },
     {
-        id: "2", 
+        id: "2",
         name: "Coding Mentor",
         subject: "coding",
         topic: "JavaScript",
@@ -24,7 +24,7 @@ const staticCompanions = [
     },
     {
         id: "3",
-        name: "Economics Mentor", 
+        name: "Economics Mentor",
         subject: "economics",
         topic: "Microeconomics",
         style: "analytical",
@@ -35,7 +35,7 @@ const staticCompanions = [
     {
         id: "4",
         name: "Math Mentor",
-        subject: "maths", 
+        subject: "maths",
         topic: "Calculus",
         style: "patient",
         voice: "michael",
@@ -46,7 +46,7 @@ const staticCompanions = [
         id: "5",
         name: "Language Mentor",
         subject: "language",
-        topic: "English Grammar", 
+        topic: "English Grammar",
         style: "encouraging",
         voice: "sarah",
         src: "/icons/language.svg",
@@ -57,7 +57,7 @@ const staticCompanions = [
         name: "General Knowledge Mentor",
         subject: "general",
         topic: "World History",
-        style: "engaging", 
+        style: "engaging",
         voice: "michael",
         src: "/icons/general.svg",
         author: "system"
@@ -66,10 +66,10 @@ const staticCompanions = [
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         // Find companion by ID
         const companion = staticCompanions.find(c => c.id === id);
@@ -94,10 +94,10 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json();
 
         // Find companion by ID
@@ -133,10 +133,10 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         // Find companion by ID
         const companionIndex = staticCompanions.findIndex(c => c.id === id);
