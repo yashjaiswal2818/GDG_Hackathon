@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import CompanionCard from "@/components/CompanionCard";
 import { getSubjectColor } from "@/lib/utils";
 import SearchInput from "@/components/SearchInput";
@@ -64,7 +64,7 @@ const staticCompanions = [
     }
 ];
 
-const CompanionsLibrary = ({ searchParams }: SearchParams) => {
+const CompanionsLibrary = () => {
     const [companions, setCompanions] = useState(staticCompanions);
     const [loading, setLoading] = useState(false);
 
@@ -93,8 +93,12 @@ const CompanionsLibrary = ({ searchParams }: SearchParams) => {
             <section className="flex justify-between gap-4 max-sm:flex-col">
                 <h1>Mentor Library</h1>
                 <div className="flex gap-4">
-                    <SearchInput />
-                    <SubjectFilter />
+                    <Suspense fallback={<div className="w-32 h-10 bg-gray-200 rounded animate-pulse"></div>}>
+                        <SearchInput />
+                    </Suspense>
+                    <Suspense fallback={<div className="w-32 h-10 bg-gray-200 rounded animate-pulse"></div>}>
+                        <SubjectFilter />
+                    </Suspense>
                 </div>
             </section>
             <section className="companions-grid">

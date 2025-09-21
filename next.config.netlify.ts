@@ -15,9 +15,7 @@ const nextConfig: NextConfig = {
         ]
     },
     // Disable Sentry for Netlify deployment
-    experimental: {
-        serverComponentsExternalPackages: ['@sentry/nextjs']
-    }
+    serverExternalPackages: ['@sentry/nextjs']
 };
 
 export default nextConfig;
