@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
         }
 
         const openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY || "",
+            apiKey: process.env.OPENAI_API_KEY,
         });
 
         const prompt = `As a Storytelling Agent, create compelling narratives and pitch content for this startup idea:

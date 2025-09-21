@@ -1,75 +1,23 @@
-"use client";
-
-import { useUser } from "@clerk/nextjs";
-import { useRouter, useParams } from "next/navigation";
+import { getCompanion } from "@/lib/actions/companion.actions";
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { getSubjectColor } from "@/lib/utils";
 import Image from "next/image";
 import CompanionComponent from "@/components/CompanionComponent";
-import { useState, useEffect } from "react";
 
-const CompanionSession = () => {
-    const { user, isLoaded } = useUser();
-    const router = useRouter();
-    const params = useParams();
-    const id = params.id as string;
-    const [companion, setCompanion] = useState(null);
-    const [loading, setLoading] = useState(true);
+interface CompanionSessionPageProps {
+    params: Promise<{ id: string }>;
+}
 
-    useEffect(() => {
-        if (isLoaded && !user) {
-            router.push('/sign-in');
-            return;
-        }
-
-        if (user && id) {
-            loadCompanion();
-        }
-    }, [user, isLoaded, id, router]);
-
-    const loadCompanion = async () => {
-        setLoading(true);
-        try {
-            const response = await fetch(`/api/companions/${id}`);
-            if (response.ok) {
-                const data = await response.json();
-                setCompanion(data);
-            } else {
-                // Fallback to static companion data
-                setCompanion({
-                    id,
-                    name: "AI Mentor",
-                    subject: "general",
-                    title: "General AI Assistant",
-                    topic: "General Knowledge and Learning",
-                    duration: 30,
-                    description: "A helpful AI mentor ready to assist with your learning journey."
-                });
-            }
-        } catch (error) {
-            console.log('Using fallback companion data');
-            setCompanion({
-                id,
-                name: "AI Mentor",
-                subject: "general",
-                title: "General AI Assistant",
-                topic: "General Knowledge and Learning",
-                duration: 30,
-                description: "A helpful AI mentor ready to assist with your learning journey."
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (!isLoaded || loading) {
-        return <main>Loading...</main>;
-    }
-
-    if (!user || !companion) {
-        return null;
-    }
+const CompanionSession = async ({ params }: CompanionSessionPageProps) => {
+    const { id } = await params;
+    const companion = await getCompanion(id);
+    const user = await currentUser();
 
     const { name, subject, title, topic, duration } = companion;
+
+    if (!user) redirect('/sign-in');
+    if (!name) redirect('/companions')
 
     return (
         <main>

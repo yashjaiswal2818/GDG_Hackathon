@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
         }
 
         const openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY || "",
+            apiKey: process.env.OPENAI_API_KEY,
         });
 
         const prompt = `As a Presentation Agent, create a comprehensive pitch deck structure and design for this startup idea:

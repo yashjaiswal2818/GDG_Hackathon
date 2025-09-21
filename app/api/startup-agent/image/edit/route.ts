@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
 export async function POST(request: NextRequest) {
     try {
@@ -13,6 +14,11 @@ export async function POST(request: NextRequest) {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+        // Initialize Gemini Image Generation Client
+        const geminiImageClient = new GoogleGenAI({
+            apiKey: process.env.GEMINI_API_KEY || ""
+        });
+
         try {
             // First, enhance the edit prompt with Gemini
             const enhancedEditPrompt = await model.generateContent(`
@@ -21,42 +27,69 @@ export async function POST(request: NextRequest) {
                 The instruction should be:
                 - Specific and actionable
                 - Professional and business-appropriate
-                - Clear and easy to understand
-                - Focused on the requested changes
+                - Clear about what changes to make
+                - Suitable for AI image editing
                 
-                Provide a comprehensive editing instruction that can be used with any image editing tool.
+                Return only the enhanced editing instruction, no explanations.
             `);
 
             const enhancedPromptText = enhancedEditPrompt.response.text();
             console.log(`Enhanced edit prompt: ${enhancedPromptText}`);
 
-            // Return enhanced prompt as conceptual edit
+            // Try to generate edited image with Gemini
+            try {
+                console.log("Attempting to generate edited image with Gemini");
+                const imageModel = geminiImageClient.getGenerativeModel({
+                    model: "gemini-2.5-flash-image-preview"
+                });
+
+                // Create a comprehensive prompt for image editing
+                const fullEditPrompt = `
+                    Edit this image with the following changes: ${enhancedPromptText}
+                    
+                    Maintain the original style and quality while applying the requested modifications.
+                    Ensure the result is professional and suitable for business use.
+                `;
+
+                const imageResponse = await imageModel.generateContent(fullEditPrompt);
+
+                // Extract image data from response
+                const imageParts = imageResponse.response.candidates?.[0]?.content?.parts?.filter(
+                    (part: any) => part.inline_data
+                );
+
+                if (imageParts && imageParts.length > 0) {
+                    // Convert base64 to data URL
+                    const imageData = imageParts[0].inline_data.data;
+                    const imageUrl = `data:image/png;base64,${imageData}`;
+
+                    console.log("Gemini image editing success");
+                    return NextResponse.json({
+                        editedImage: imageUrl,
+                        enhancedPrompt: enhancedPromptText,
+                        source: "Gemini 2.5 Flash"
+                    });
+                }
+            } catch (imageGenError) {
+                console.log("Gemini image editing failed:", imageGenError.message);
+            }
+
+            // If image generation fails, return enhanced prompt for manual editing
             return NextResponse.json({
-                success: true,
-                editedImageUrl: null,
-                editPrompt: enhancedPromptText,
-                method: "conceptual-edit",
-                message: "Image editing is conceptual. Use the enhanced prompt with your preferred image editing tool."
+                editedImage: null,
+                enhancedPrompt: enhancedPromptText,
+                source: "Gemini Enhanced",
+                error: "Use enhanced prompt with any AI image editor"
             });
 
-        } catch (geminiError) {
-            console.log("Gemini prompt enhancement failed:", geminiError);
-            
-            // Fallback to original prompt
-            return NextResponse.json({
-                success: true,
-                editedImageUrl: null,
-                editPrompt: editPrompt,
-                method: "fallback",
-                message: "Using original prompt. Consider using an image editing tool with this prompt."
-            });
+        } catch (error) {
+            console.error("Error in image editing:", error);
+            return NextResponse.json({ error: "Failed to process image edit" }, { status: 500 });
         }
 
     } catch (error) {
-        console.error("Image editing error:", error);
-        return NextResponse.json(
-            { error: "Failed to process image editing request" },
-            { status: 500 }
-        );
+        console.error("Error in image edit API:", error);
+        return NextResponse.json({ error: "Failed to edit image" }, { status: 500 });
     }
 }
+

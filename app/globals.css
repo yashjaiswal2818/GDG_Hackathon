@@ -361,4 +361,58 @@ body {
   .glow-dark-blue {
     box-shadow: 0 0 20px rgba(30, 64, 175, 0.5);
   }
+
+  /* Clerk User Profile Dropdown Styling */
+  .cl-userButtonPopoverCard {
+    background-color: #1e293b !important;
+    border: 1px solid #475569 !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .cl-userButtonPopoverActionButton {
+    color: #f1f5f9 !important;
+  }
+
+  .cl-userButtonPopoverActionButton:hover {
+    background-color: #334155 !important;
+  }
+
+  .cl-userButtonPopoverActionButtonText {
+    color: #f1f5f9 !important;
+  }
+
+  .cl-userButtonPopoverActionButtonIcon {
+    color: #94a3b8 !important;
+  }
+
+  .cl-userButtonPopoverFooter {
+    background-color: #334155 !important;
+    border-top: 1px solid #475569 !important;
+  }
+
+  .cl-userButtonPopoverFooterText {
+    color: #94a3b8 !important;
+  }
+
+  .cl-userButtonPopoverMainIdentifier {
+    color: #f1f5f9 !important;
+    font-weight: 600 !important;
+  }
+
+  .cl-userButtonPopoverSecondaryIdentifier {
+    color: #94a3b8 !important;
+  }
+
+  /* Ensure all text in Clerk components is visible */
+  .cl-userButtonPopoverCard * {
+    color: inherit !important;
+  }
+
+  .cl-userButtonPopoverCard .cl-userButtonPopoverMainIdentifier {
+    color: #f1f5f9 !important;
+  }
+
+  .cl-userButtonPopoverCard .cl-userButtonPopoverSecondaryIdentifier {
+    color: #94a3b8 !important;
+  }
 }

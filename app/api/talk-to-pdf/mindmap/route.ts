@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import OpenAI from "openai";
 
 export async function POST(request: NextRequest) {
@@ -12,8 +13,8 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Generate mind map data using OpenAI
-        const mindMap = await generateMindMapWithOpenAI(pdfText);
+        // Generate mind map data using Google Gemini
+        const mindMap = await generateMindMapWithGemini(pdfText);
 
         return NextResponse.json({ mindMap });
     } catch (error) {
@@ -25,11 +26,11 @@ export async function POST(request: NextRequest) {
     }
 }
 
-async function generateMindMapWithOpenAI(pdfText: string) {
+async function generateMindMapWithGemini(pdfText: string) {
     try {
-        const openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY || "",
-        });
+        // Initialize Google Gemini AI
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const prompt = `Analyze the following document and create a structured mind map. Extract the main concepts, key topics, and their relationships.
 
@@ -61,36 +62,18 @@ Guidelines:
 
 Return only the JSON object, no additional text.`;
 
-        const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            messages: [
-                {
-                    role: "system",
-                    content: "You are an expert at analyzing documents and creating mind maps. Always return valid JSON format for mind map data."
-                },
-                {
-                    role: "user",
-                    content: prompt
-                }
-            ],
-            max_tokens: 800,
-            temperature: 0.3,
-        });
-
-        const text = completion.choices[0]?.message?.content || "{}";
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text() || "{}";
 
         // Parse the JSON response
         const mindMapData = JSON.parse(text);
         return mindMapData;
     } catch (error: any) {
-        console.error("OpenAI API error:", error);
-
-        // Check if it's a rate limit error
-        if (error.message?.includes("429") || error.message?.includes("rate_limit")) {
-            console.log("OpenAI rate limit reached, using basic mind map generation");
-        }
+        console.error("Gemini API error:", error);
 
         // Fallback to basic mind map generation
+        console.log("Gemini API error, using basic mind map generation");
         return await generateBasicMindMap(pdfText);
     }
 }

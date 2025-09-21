@@ -206,3 +206,4 @@ export default function ImageCanvas({ imageUrl, mode, brushSize, onMaskChange }:
         </div>
     );
 }
+

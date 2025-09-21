@@ -151,3 +151,4 @@ const MindMapGenerator = ({ data }: MindMapGeneratorProps) => {
 };
 
 export default MindMapGenerator;
+

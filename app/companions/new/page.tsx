@@ -1,29 +1,13 @@
-"use client";
-
 import CompanionForm from "@/components/CompanionForm";
-import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+//import {newCompanionPermissions} from "@/lib/actions/companion.actions";
 import Image from "next/image";
 import Link from "next/link";
 
-const NewCompanion = () => {
-    const { user, isLoaded } = useUser();
-    const router = useRouter();
-
-    useEffect(() => {
-        if (isLoaded && !user) {
-            router.push('/sign-in');
-        }
-    }, [user, isLoaded, router]);
-
-    if (!isLoaded) {
-        return <div>Loading...</div>;
-    }
-
-    if (!user) {
-        return null;
-    }
+const NewCompanion = async () => {
+    const { userId } = await auth();
+    if (!userId) redirect('/sign-in');
 
     //const canCreateCompanion = await newCompanionPermissions();
 
