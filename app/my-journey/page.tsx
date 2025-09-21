@@ -1,27 +1,67 @@
+"use client";
+
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import {
-  getUserCompanions,
-  getUserSessions,
- // getBookmarkedCompanions,
-} from "@/lib/actions/companion.actions";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import CompanionsList from "@/components/CompanionsList";
 
-const Profile = async () => {
-  const user = await currentUser();
+const Profile = () => {
+  const { user, isLoaded } = useUser();
+  const router = useRouter();
+  const [companions, setCompanions] = useState([]);
+  const [sessionHistory, setSessionHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!user) redirect("/sign-in");
+  useEffect(() => {
+    if (isLoaded && !user) {
+      router.push("/sign-in");
+      return;
+    }
 
-  const companions = await getUserCompanions(user.id);
-  const sessionHistory = await getUserSessions(user.id);
-  //const bookmarkedCompanions = await getBookmarkedCompanions(user.id);
+    if (user) {
+      loadUserData();
+    }
+  }, [user, isLoaded, router]);
+
+  const loadUserData = async () => {
+    setLoading(true);
+    try {
+      // Try to load user data if API endpoints are available
+      const [companionsRes, sessionsRes] = await Promise.allSettled([
+        fetch(`/api/user/companions?userId=${user?.id}`),
+        fetch(`/api/user/sessions?userId=${user?.id}`)
+      ]);
+
+      if (companionsRes.status === 'fulfilled' && companionsRes.value.ok) {
+        const companionsData = await companionsRes.value.json();
+        setCompanions(companionsData);
+      }
+
+      if (sessionsRes.status === 'fulfilled' && sessionsRes.value.ok) {
+        const sessionsData = await sessionsRes.value.json();
+        setSessionHistory(sessionsData);
+      }
+    } catch (error) {
+      console.log('Using default data for user profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isLoaded || loading) {
+    return <div className="min-lg:w-3/4">Loading...</div>;
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <main className="min-lg:w-3/4">

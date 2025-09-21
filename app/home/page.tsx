@@ -2,14 +2,44 @@ import CompanionCard from "@/components/CompanionCard";
 import CompanionsList from "@/components/CompanionsList";
 import CTA from "@/components/CTA";
 import { recentSessions } from "@/constants";
-import { getAllCompanions, getRecentSessions } from "@/lib/actions/companion.actions";
 import { getSubjectColor } from "@/lib/utils";
 import Link from "next/link";
 import { Users, Sparkles, ArrowRight } from "lucide-react";
 
-const HomePage = async () => {
-    const companions = await getAllCompanions({ limit: 3 });
-    const recentSessionsCompanions = await getRecentSessions(10);
+// Static data for home page to enable static generation
+const staticCompanions = [
+    {
+        id: "1",
+        name: "Math Mentor",
+        subject: "maths",
+        topic: "Algebra and Calculus",
+        description: "Expert in mathematics with focus on algebra, calculus, and problem-solving techniques.",
+        src: "/icons/maths.svg",
+        author: "system"
+    },
+    {
+        id: "2", 
+        name: "Science Guide",
+        subject: "science",
+        topic: "Physics and Chemistry",
+        description: "Comprehensive science tutor covering physics, chemistry, and scientific methodology.",
+        src: "/icons/science.svg",
+        author: "system"
+    },
+    {
+        id: "3",
+        name: "Coding Coach",
+        subject: "coding", 
+        topic: "Programming and Development",
+        description: "Programming mentor specializing in web development, algorithms, and software engineering.",
+        src: "/icons/coding.svg",
+        author: "system"
+    }
+];
+
+const HomePage = () => {
+    const companions = staticCompanions;
+    const recentSessionsCompanions = recentSessions;
 
     return (
         <main className="space-y-16">
