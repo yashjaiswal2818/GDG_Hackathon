@@ -18,7 +18,7 @@ const staticCompanions = [
         author: "system"
     },
     {
-        id: "2", 
+        id: "2",
         name: "Science Guide",
         subject: "science",
         topic: "Physics and Chemistry",
@@ -29,7 +29,7 @@ const staticCompanions = [
     {
         id: "3",
         name: "Coding Coach",
-        subject: "coding", 
+        subject: "coding",
         topic: "Programming and Development",
         description: "Programming mentor specializing in web development, algorithms, and software engineering.",
         src: "/icons/coding.svg",

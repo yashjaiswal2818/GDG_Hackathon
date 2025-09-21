@@ -105,7 +105,7 @@ const Profile = () => {
         </div>
       </section>
       <Accordion type="multiple">
-       
+
         <AccordionItem value="recent">
           <AccordionTrigger className="text-2xl font-bold">
             Recent Sessions
