@@ -29,14 +29,14 @@ const NewCompanion = () => {
 
     return (
         <main className="min-lg:w-1/3 min-md:w-2/3 items-center justify-center">
-          
-                <article className="w-full flex flex-col gap-4">
 
-                    <h1>Mentor builder</h1>
+            <article className="w-full flex flex-col gap-4">
 
-                    <CompanionForm />
+                <h1>Mentor builder</h1>
 
-                </article>
+                <CompanionForm />
+
+            </article>
         </main>
     )
 }
